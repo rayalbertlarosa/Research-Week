@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - DLSMHSI Research Week 2025</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8f9fa;
+            color: #333;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e4d2b 0%, #2d5a3d 100%);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1e4d2b;
+            display: block;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .registrations-section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #1e4d2b;
+            margin: 0;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 0.75rem;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #1e4d2b;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #1e4d2b;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #144025;
+        }
+
+        .btn-secondary {
+            background: #e9ecef;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #dee2e6;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .registrations-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .registrations-table th,
+        .registrations-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .registrations-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #1e4d2b;
+        }
+
+        .registrations-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-sent {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        .error {
+            text-align: center;
+            padding: 2rem;
+            color: #dc3545;
+        }
+
+        .export-section {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .btn-small {
+            padding: 0.4rem 0.6rem;
+            border: none;
+            background: #1e4d2b;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-small:hover {
+            background: #144025;
+            transform: scale(1.05);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .form-group-modal {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group-modal label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .form-group-modal select,
+        .form-group-modal textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+
+            .search-input {
+                min-width: 100%;
+            }
+
+            .registrations-table {
+                font-size: 0.8rem;
+            }
+
+            .registrations-table th,
+            .registrations-table td {
+                padding: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1><i class="fas fa-chart-bar"></i> DLSMHSI Research Week 2025 - Admin Dashboard</h1>
+    </div>
+
+    <div class="container">
+        <!-- Statistics Section -->
+        <div class="stats-grid" id="stats-grid">
+            <div class="stat-card">
+                <span class="stat-number" id="total-registrations">-</span>
+                <span class="stat-label">Total Registrations</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="today-registrations">-</span>
+                <span class="stat-label">Today's Registrations</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="emails-sent">-</span>
+                <span class="stat-label">Emails Sent</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="pending-emails">-</span>
+                <span class="stat-label">Pending Emails</span>
+            </div>
+        </div>
+        
+        <!-- Day-specific Statistics -->
+        <div class="stats-grid" id="day-stats-grid" style="margin-top: 1rem;">
+            <div class="stat-card">
+                <span class="stat-number" id="day1-count">-</span>
+                <span class="stat-label">Day 1 - Nov 10</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="day2-count">-</span>
+                <span class="stat-label">Day 2 - Nov 11</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="day3-count">-</span>
+                <span class="stat-label">Day 3 - Nov 12</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="day4-count">-</span>
+                <span class="stat-label">Day 4 - Nov 13</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="day5-count">-</span>
+                <span class="stat-label">Day 5 - Nov 14</span>
+            </div>
+        </div>
+
+        <!-- Registrations Section -->
+        <div class="registrations-section">
+            <div class="section-header">
+                <h2 class="section-title">Registrations Management</h2>
+                <div class="controls">
+                    <input type="text" class="search-input" id="search-input" placeholder="Search by name, email, or affiliation...">
+                    <button class="btn btn-primary" onclick="refreshData()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                    <button class="btn btn-secondary" onclick="exportCSV()">
+                        <i class="fas fa-download"></i> Export CSV
+                    </button>
+                </div>
+                <div class="export-section">
+                    <p><strong>Last Updated:</strong> <span id="last-updated">-</span></p>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <div id="registrations-content">
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin"></i> Loading registrations...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let registrationsData = [];
+        let filteredData = [];
+
+        // Load data on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadRegistrations();
+            setupSearch();
+        });
+
+        async function loadRegistrations() {
+            try {
+                const response = await fetch('/api/admin/registrations');
+                const data = await response.json();
+
+                if (data.success) {
+                    registrationsData = data.registrations;
+                    filteredData = [...registrationsData];
+                    updateStats(data.stats);
+                    renderRegistrations();
+                    updateLastUpdated();
+                } else {
+                    showError('Failed to load registrations');
+                }
+            } catch (error) {
+                console.error('Error loading registrations:', error);
+                showError('Network error. Please check your connection.');
+            }
+        }
+
+        function updateStats(stats) {
+            document.getElementById('total-registrations').textContent = stats.total || 0;
+            document.getElementById('today-registrations').textContent = stats.today || 0;
+            document.getElementById('emails-sent').textContent = stats.emailsSent || 0;
+            document.getElementById('pending-emails').textContent = (stats.total - stats.emailsSent) || 0;
+            
+            // Update day-specific stats
+            if (stats.byDay) {
+                document.getElementById('day1-count').textContent = stats.byDay.day1 || 0;
+                document.getElementById('day2-count').textContent = stats.byDay.day2 || 0;
+                document.getElementById('day3-count').textContent = stats.byDay.day3 || 0;
+                document.getElementById('day4-count').textContent = stats.byDay.day4 || 0;
+                document.getElementById('day5-count').textContent = stats.byDay.day5 || 0;
+            }
+        }
+
+        function renderRegistrations() {
+            const container = document.getElementById('registrations-content');
+            
+            if (filteredData.length === 0) {
+                container.innerHTML = '<div class="loading">No registrations found.</div>';
+                return;
+            }
+
+            const table = `
+                <table class="registrations-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Affiliation</th>
+                            <th>Phone</th>
+                            <th>Selected Days</th>
+                            <th>Status</th>
+                            <th>Payment</th>
+                            <th>Registration Date</th>
+                            <th>Email Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${filteredData.map(reg => {
+                            const selectedDays = [];
+                            if (reg.day1) selectedDays.push('D1');
+                            if (reg.day2) selectedDays.push('D2');
+                            if (reg.day3) selectedDays.push('D3');
+                            if (reg.day4) selectedDays.push('D4');
+                            if (reg.day5) selectedDays.push('D5');
+                            
+                            const statusClass = {
+                                'active': 'status-sent',
+                                'confirmed': 'status-sent',
+                                'cancelled': 'status-pending',
+                                'waitlist': 'status-pending',
+                                'completed': 'status-sent'
+                            }[reg.registration_status || 'active'];
+                            
+                            const paymentClass = {
+                                'paid': 'status-sent',
+                                'pending': 'status-pending',
+                                'waived': 'status-sent',
+                                'refunded': 'status-pending'
+                            }[reg.payment_status || 'pending'];
+                            
+                            return `
+                            <tr>
+                                <td>${reg.full_name}</td>
+                                <td>${reg.email}</td>
+                                <td>${reg.affiliation}</td>
+                                <td>${reg.phone || '-'}</td>
+                                <td><strong>${selectedDays.join(', ') || 'None'}</strong></td>
+                                <td>
+                                    <span class="status-badge ${statusClass}">
+                                        ${(reg.registration_status || 'active').toUpperCase()}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="status-badge ${paymentClass}">
+                                        ${(reg.payment_status || 'pending').toUpperCase()}
+                                    </span>
+                                </td>
+                                <td>${new Date(reg.registration_date).toLocaleDateString()}</td>
+                                <td>
+                                    <span class="status-badge ${reg.email_sent ? 'status-sent' : 'status-pending'}">
+                                        ${reg.email_sent ? '✅ Sent' : '⏳ Pending'}
+                                    </span>
+                                </td>
+                                <td>
+                                    <button class="btn-small" onclick="updateStatus(${reg.id})" title="Update Status">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                </table>
+            `;
+
+            container.innerHTML = table;
+        }
+
+        function setupSearch() {
+            const searchInput = document.getElementById('search-input');
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase().trim();
+                
+                if (query === '') {
+                    filteredData = [...registrationsData];
+                } else {
+                    filteredData = registrationsData.filter(reg => 
+                        reg.full_name.toLowerCase().includes(query) ||
+                        reg.email.toLowerCase().includes(query) ||
+                        reg.affiliation.toLowerCase().includes(query)
+                    );
+                }
+                
+                renderRegistrations();
+            });
+        }
+
+        function refreshData() {
+            document.getElementById('registrations-content').innerHTML = 
+                '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Refreshing data...</div>';
+            loadRegistrations();
+        }
+
+        function exportCSV() {
+            const csvData = [
+                ['Name', 'Email', 'Affiliation', 'Phone', 'Research Interests', 'Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Status', 'Payment', 'Registration Date', 'Email Sent', 'Notes'],
+                ...filteredData.map(reg => [
+                    reg.full_name,
+                    reg.email,
+                    reg.affiliation,
+                    reg.phone || '',
+                    reg.research_interests || '',
+                    reg.day1 ? 'Yes' : 'No',
+                    reg.day2 ? 'Yes' : 'No',
+                    reg.day3 ? 'Yes' : 'No',
+                    reg.day4 ? 'Yes' : 'No',
+                    reg.day5 ? 'Yes' : 'No',
+                    reg.registration_status || 'active',
+                    reg.payment_status || 'pending',
+                    new Date(reg.registration_date).toLocaleDateString(),
+                    reg.email_sent ? 'Yes' : 'No',
+                    reg.notes || ''
+                ])
+            ];
+
+            const csvContent = csvData.map(row => 
+                row.map(field => `"${String(field).replace(/"/g, '""')}"`).join(',')
+            ).join('\n');
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `dlsmhsi-research-week-registrations-${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function showError(message) {
+            document.getElementById('registrations-content').innerHTML = 
+                `<div class="error"><i class="fas fa-exclamation-circle"></i> ${message}</div>`;
+        }
+
+        function updateLastUpdated() {
+            document.getElementById('last-updated').textContent = new Date().toLocaleString();
+        }
+        
+        // Update status function
+        function updateStatus(id) {
+            const registration = registrationsData.find(r => r.id === id);
+            if (!registration) return;
+            
+            const modal = document.getElementById('statusModal');
+            document.getElementById('modalRegName').textContent = registration.full_name;
+            document.getElementById('modalRegEmail').textContent = registration.email;
+            document.getElementById('statusSelect').value = registration.registration_status || 'active';
+            document.getElementById('paymentSelect').value = registration.payment_status || 'pending';
+            document.getElementById('notesTextarea').value = registration.notes || '';
+            
+            modal.classList.add('active');
+            
+            // Store current ID for save
+            window.currentEditId = id;
+        }
+        
+        function closeModal() {
+            document.getElementById('statusModal').classList.remove('active');
+        }
+        
+        async function saveStatus() {
+            const id = window.currentEditId;
+            const status = document.getElementById('statusSelect').value;
+            const payment = document.getElementById('paymentSelect').value;
+            const notes = document.getElementById('notesTextarea').value;
+            
+            try {
+                // Update status
+                await fetch(`/api/registration/${id}/status`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status, notes })
+                });
+                
+                // Update payment
+                await fetch(`/api/registration/${id}/payment`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: payment })
+                });
+                
+                closeModal();
+                refreshData();
+                
+                // Show success message
+                alert('Status updated successfully!');
+            } catch (error) {
+                console.error('Error updating status:', error);
+                alert('Failed to update status. Please try again.');
+            }
+        }
+
+        // Auto-refresh every 5 minutes
+        setInterval(() => {
+            loadRegistrations();
+        }, 5 * 60 * 1000);
+    </script>
+    
+    <!-- Status Update Modal -->
+    <div id="statusModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Update Registration Status</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div style="margin-bottom: 1.5rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                <p><strong>Name:</strong> <span id="modalRegName"></span></p>
+                <p style="margin-bottom: 0;"><strong>Email:</strong> <span id="modalRegEmail"></span></p>
+            </div>
+            <div class="form-group-modal">
+                <label>Registration Status</label>
+                <select id="statusSelect">
+                    <option value="active">Active</option>
+                    <option value="confirmed">Confirmed</option>
+                    <option value="waitlist">Waitlist</option>
+                    <option value="cancelled">Cancelled</option>
+                    <option value="completed">Completed</option>
+                </select>
+            </div>
+            <div class="form-group-modal">
+                <label>Payment Status</label>
+                <select id="paymentSelect">
+                    <option value="pending">Pending</option>
+                    <option value="paid">Paid</option>
+                    <option value="waived">Waived</option>
+                    <option value="refunded">Refunded</option>
+                </select>
+            </div>
+            <div class="form-group-modal">
+                <label>Notes</label>
+                <textarea id="notesTextarea" rows="3" placeholder="Add notes about this registration..."></textarea>
+            </div>
+            <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
+                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveStatus()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,43 @@
+{
+  "name": "dlsmhsi-research-week-2025",
+  "version": "1.0.0",
+  "description": "DLSMHSI Research Week 2025 Website - Available at dlsmhsiresearch2025.com",
+  "homepage": "https://dlsmhsiresearch2025.com",
+  "main": "server-fullstack.js",
+  "scripts": {
+    "start": "node server-fullstack.js",
+    "dev": "node server-fullstack.js",
+    "simple": "node simple-server.js",
+    "init-db": "node -e \"const Database = require('./database'); new Database();\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "dlsmhsi",
+    "research-week",
+    "medical",
+    "health-sciences",
+    "conference",
+    "website",
+    "registration",
+    "database",
+    "email-automation"
+  ],
+  "author": "Ray Albert E. La Rosa",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "sqlite3": "^5.1.6",
+    "nodemailer": "^6.9.7",
+    "cors": "^2.8.5",
+    "express-rate-limit": "^7.1.5",
+    "helmet": "^7.1.0",
+    "compression": "^1.7.4"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/username/dlsmhsi-research-week-2025.git"
+  }
+}
